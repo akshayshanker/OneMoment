@@ -1,7 +1,7 @@
 # Moment and Weight Matrix Generation "In One Place"
 
 ## Introduction
-This tool is designed for Simulated Method of Moments (SMM) estimation. The tool gives functionality to generate moments from the data, based on identification strategy specified in the configuration `.yml` file. The same function can then be used to generate the moments
+Tool is designed to generate moments from data based on identification strategy specified in the configuration `.yml` file. The same function can then be used to generate the moments
 from the simulated data. The tool also generates the weight matrix *once* based on influence functions of the *empirical* moments. 
 
 Say no to crazy ad-hoc simulated weight matrices!
