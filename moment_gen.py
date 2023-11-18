@@ -338,41 +338,30 @@ def generate_moments(df, config):
 
 
 if __name__ == "__main__":
-
-
     import yaml
     import pandas as pd
 
-    # Function to read YAML configuration
     def read_config(file_path):
+        """
+        Read a YAML configuration file.
+        """
         with open(file_path, 'r') as file:
             return yaml.safe_load(file)
     
-    # Read a config file which specifies the time and cohort variables
-    # and the moments used in the SMM estimation. 
+    # Reading configuration and data files
     config = read_config('moments_LS.yml')
-
-    # Read the data file
-    # must be in the same directory as the code
-    # and must be in csv format
-    # An individual is identified by a unique member_ID and is the row_var
-    # Data format:
-    # - One column for member_ID
-    # - One column for each variable
-    # - One column for time
-    # - One column for age
-    # - One column for gender 
-    # - One column for treatment group (optional)
-
-    # Read as a data-frame 
     df_in = pd.read_csv('example_LS.csv')
 
-    # Generate moments and influence functions (see docs for details)
-    # output raw moment and influence function dictionaries are 
-    # given by gender x treatment group pairs 
-    # e.g. raw_moments[('Female', 'None')] are raw moments 
-    # where there are no treatment groups and gender is 'Female'
+    # Data format assumptions:
+    # - Unique member_ID per individual (row_var)
+    # - Columns: member_ID, variables, time, age, gender, treatment (optional)
+
+    # Generate moments and influence functions
+    # Output dictionaries for raw moments and influence functions
+    # are indexed by gender x treatment group pairs
+    # Example: raw_moments[('Female', 'None')] for Female, no treatment group
     df, psi_df, raw_moments = generate_moments(df_in, config)
 
-    # Compute the variance-covariance matrix of the moments
-    V = _compute_cov_matrix_with_nan(raw_moments[('Female', 'None')], psi_df[('Female', 'None')])
+    # Compute the variance-covariance matrix for the moments
+    V = _compute_cov_matrix_with_nan(raw_moments[('Female', 'None')],
+                                     psi_df[('Female', 'None')])
