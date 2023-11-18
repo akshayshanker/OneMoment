@@ -271,10 +271,10 @@ def generate_moments(df, config):
     """
     Generate moments for SMM estimation from a DataFrame and a configuration file.
     """
-    
+
     # Process derived variables under 'Setup'
     derived_vars_config = config['Setup']['derived_variables'][0]
-    
+
     if derived_vars_config != 'None':
         for derived_var, expression in derived_vars_config.items():
             df[derived_var] = df.eval(expression)
@@ -285,10 +285,10 @@ def generate_moments(df, config):
 
     if treatment_var == 'None':
         treatment_var = False
-    
+
     gender_var = config['Setup']['gender_var'][0]
     age_var = config['Setup']['age_var'][0]
-    
+
     # Extract additional setup configurations
     time_indices = config['Setup']['time_indices'][0]
 
@@ -297,14 +297,14 @@ def generate_moments(df, config):
     sd_vars = config['Identification']['sds']
     corr_vars = [tuple(pair) for pair in config['Identification']['corrs']]
     autocorr_vars = config['Identification']['autocorrs']
-    age_groups = {key: tuple(value) for key, value in config['Setup']['age_groups'].items()}
+    age_groups = {key: tuple(value) for key, value in 
+                config['Setup']['age_groups'].items()}
 
     # Initialize dictionary for storing DataFrames
     stats_by_group = {}
     raw_moments = {}
     psi_by_group = {}
-    #print(df[gender_var])
-   # print(df.columns)
+
     # Iterate over combinations of gender and treatment groups
     for gender in df[gender_var].unique():
         
@@ -312,21 +312,30 @@ def generate_moments(df, config):
         if treatment_var:
             for treatment in df[treatment_var].unique():
                 
-                df_filtered = df[(df[gender_var] == gender) & (df[treatment_var] == treatment)]
-                stats_df, psi_df= compute_stats_by_time_age_autocorr(df_filtered, age_var, time_indices, age_groups, mean_vars, sd_vars, corr_vars, autocorr_vars, time_var = time_var, member_id_var = member_id_var)
+                df_filtered = df[(df[gender_var] == gender) & 
+                                (df[treatment_var] == treatment)]
+                stats_df, psi_df = compute_stats_by_time_age_autocorr(
+                    df_filtered, age_var, time_indices, age_groups, mean_vars, sd_vars,
+                    corr_vars, autocorr_vars, time_var=time_var, 
+                    member_id_var=member_id_var
+                )
                 stats_by_group[(gender, treatment)] = stats_df
                 psi_by_group = psi_df
         else:
-            # If treatment_var is not specified, process without filtering by treatment
-            #print(df[time_var])
+            # Process without filtering by treatment if treatment_var is not specified
             df_filtered = df[df[gender_var] == gender]
             
-            stats_df, psi_df, age_group_results = compute_stats_by_time_age_autocorr(df_filtered, age_var, time_indices, age_groups, mean_vars, sd_vars, corr_vars, autocorr_vars, time_var = time_var, member_id_var = member_id_var)
+            stats_df, psi_df, age_group_results = compute_stats_by_time_age_autocorr(
+                df_filtered, age_var, time_indices, age_groups, mean_vars, sd_vars, 
+                corr_vars, autocorr_vars, time_var=time_var, 
+                member_id_var=member_id_var
+            )
             stats_by_group[(gender, 'None')] = stats_df
             psi_by_group[(gender, 'None')] = psi_df
             raw_moments[(gender, 'None')] = age_group_results
 
-    return stats_by_group, psi_by_group,raw_moments
+    return stats_by_group, psi_by_group, raw_moments
+
 
 if __name__ == "__main__":
 
