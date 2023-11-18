@@ -4,7 +4,7 @@
 This tool is designed for Simulated Method of Moments (SMM) estimation. The tool gives functionality to generate moments from the data, based on identification strategy specified in the configuration `.yml` file. The same function can then be used to generate the moments
 from the simuldated data. The tool also generates the weight matrix based on influence functions of the *empirical* moments. 
 
-No more crazy N simulated weight matrices!
+Say no to crazy ad-hoc simulated weight matrices!
 
 Influence function generation follows [Erickson and Whited (2000) ](https://www.jstor.org/stable/10.1086/317670). See also Jay Kahn's useful exposition [here](https://j-kahn.com/files/influencefunctions.pdf). 
 
