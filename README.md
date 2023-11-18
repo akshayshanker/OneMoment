@@ -9,14 +9,13 @@ Influence function generation follows Toni Whited's [paper](https://www.jstor.or
 The project is currently under development and highly experimental.
 
 ## Features
-- Generates statistical moments for SMM estimation from complex datasets.
-- Handles data with multiple variables, including time, cohort, and treatment variables.
+- Handles panel data with multiple variables and time, cohort, and treatment variables.
 - Computes mean, standard deviation, pairwise correlations, and autocorrelations.
 - Supports gender and treatment group-based analysis.
-- Outputs raw moments and influence functions for specified demographic groups.
+- Outputs raw moments and influence functions for each moment. 
 
 ## Installation
-To use this tool, you'll need Python installed on your system, along with the Pandas and YAML libraries. Install the required libraries using pip:
+Requires Pandas and YAML libraries. Install the required libraries using pip:
 
 ```bash
 pip install pandas pyyaml
