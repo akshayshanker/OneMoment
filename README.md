@@ -14,12 +14,27 @@ The project is currently under development and highly experimental.
 - Supports gender and treatment group-based analysis.
 - Outputs raw moments and influence functions for each moment. 
 
-## Installation
-Requires Pandas and YAML libraries. Install the required libraries using pip:
+## Usage
 
-```bash
-pip install pandas pyyaml
+Read the config file which has identification strategy and data variable lists,  and read the data:
+
 ```
+config = read_config('moments_LS.yml')
+df_in = pd.read_csv('example_LS.csv')
+``` 
+
+Generate moments from the data. 
+
+```
+df, psi_df, raw_moments = generate_moments(df_in, config)
+```
+
+Compute the variance -covariance matrix of the moments. 
+
+```
+CovM = _compute_cov_matrix_with_nan(raw_moments[('Female', 'None')],
+                                     psi_df[('Female', 'None')])
+``` 
 
 
 ## License
