@@ -1,0 +1,102 @@
+# Config file for generating moments used in Simulated Method of Moments (SMM) Estimation
+# Data format: .csv with columns - ID, year, age, treatment, gender, var1, var2, var3, var4, ...
+# 'Identifier' variables are specified under 'Setup'
+
+# Setup Section
+# Define 'identifier' variables: ID, time indices, age, treatment, and gender
+# Define age groups for splitting moments and any new variables for the identification strategy
+
+Setup:
+  estimation_name:
+    - "Demonstration_1"  # Name for tracking purposes
+
+  # Derived Variables
+  # Define new variables calculated from existing data
+  derived_variables:
+    - total_wealth = wealth_fin + wealth_real
+
+  # Time Indices
+  # Specify time periods used in the analysis
+  time_indices:
+    - [2010, 2014]
+
+  # Member ID Variable
+  # Column name for member identifiers in the data-set
+  ID_var:
+    - 'member_id'
+
+  # Time Variable
+  # Column name for time identifiers in the data-set
+  time_var:
+    - 'year'
+
+  # Age Variable
+  # Column name for the age variable
+  age_var:
+    - 'age'
+
+  # Treatment Variable
+  # Column name for treatment group variable
+  treat_var:
+    - None
+
+  # Gender Variable
+  gender_var:
+    - 'gender'
+
+  # Age Groups
+  # Define age groups for analysis
+  age_groups:
+    20-30:
+      - include_min: true
+      - min_age: 20
+      - max_age: 30
+      - include_max: false
+    30-40:
+      - include_min: true
+      - min_age: 30
+      - max_age: 40
+      - include_max: false
+    40-50:
+      - include_min: true
+      - min_age: 40
+      - max_age: 50
+      - include_max: false
+    50-60:
+      - include_min: true
+      - min_age: 50
+      - max_age: 60
+      - include_max: false
+
+# Identification Section
+# Specify variables for constructing moment conditions in SMM
+# Includes means, standard deviations, correlations, and autocorrelations
+# Derived variables are also applicable
+
+Identification:
+  # Mean
+  mean:
+    - wealth_fin
+    - wealth_real
+    - mortgagebal
+    - total_wealth
+
+  # Standard Deviations
+  sds:
+    - wealth_fin
+    - wealth_real
+    - mortgagebal
+    - total_wealth
+
+  # Correlations
+  # Pairs of variables for cross-sectional correlations
+  corrs:
+    - [wealth_fin, wealth_real]
+    - [mortgagebal, wealth_real]
+
+  # Autocorrelations
+  # Calculated across consecutive time periods if multiple periods are specified
+  autocorrs:
+    - wealth_fin
+
+# End of Configuration File
