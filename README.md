@@ -19,7 +19,8 @@ The project is currently under development.
 ## Usage
 
 ```
-import evalmoments
+import OneMoment
+import Pandas as pd
 ````
 Read the config file which has identification strategy and data variable lists,  and read the data:
 
