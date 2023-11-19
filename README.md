@@ -41,6 +41,41 @@ CovM = _compute_cov_matrix_with_nan(raw_moments[('Female', 'None')],
                                      psi_df[('Female', 'None')])
 ``` 
 
+### Identification Strategy
+
+The identificaiton of the model is specified in the config file, which, in the
+example is `moments_LS.yml`:
+
+```
+Identification:
+  # Mean
+  mean:
+    - wealth_fin
+    - wealth_real
+    - mortgagebal
+    - total_wealth
+
+  # Standard Deviations
+  sds:
+    - wealth_fin
+    - wealth_real
+    - mortgagebal
+    - total_wealth
+
+  # Correlations
+  # Pairs of variables for cross-sectional correlations
+  corrs:
+    - [wealth_fin, wealth_real]
+    - [mortgagebal, wealth_real]
+
+  # Autocorrelations
+  # Calculated across consecutive time periods if multiple periods are specified
+  autocorrs:
+    - wealth_fin
+    - wealth_real
+
+```
+
 
 ## License
 This project is licensed under [MIT License](LICENSE).
