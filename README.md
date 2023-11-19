@@ -18,6 +18,9 @@ The project is currently under development.
 
 ## Usage
 
+```
+import evalmoments
+````
 Read the config file which has identification strategy and data variable lists,  and read the data:
 
 ```
