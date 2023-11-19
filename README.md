@@ -25,7 +25,7 @@ config = read_config('moments_LS.yml')
 df_in = pd.read_csv('example_LS.csv')
 ``` 
 
-Generate moments from the data. 
+Generate moments as a dataframe (df), as a list (raw_moments) and influence functions (psi_df):
 
 ```
 df, psi_df, raw_moments = generate_moments(df_in, config)
