@@ -99,6 +99,7 @@ Identification:
   autocorrs:
     - wealth_fin
 
+  # Regressions 
   OLS:
     - wealth_fin ~ wealth_real mortgagebal
     - total_wealth ~ mortgagebal
