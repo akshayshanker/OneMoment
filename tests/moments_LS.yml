@@ -99,4 +99,8 @@ Identification:
   autocorrs:
     - wealth_fin
 
+  OLS:
+    - wealth_fin ~ wealth_real mortgagebal
+    - total_wealth ~ mortgagebal
+
 # End of Configuration File
