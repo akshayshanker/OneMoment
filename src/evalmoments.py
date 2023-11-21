@@ -211,10 +211,11 @@ def compute_stats_by_time_age_autocorr(
     results_df = pd.DataFrame()
     Psi = {}
     raw_results = {}
+    
 
     for age_group, (include_min, min_age, max_age, include_max) in age_groups.items():
         age_group_results = {}
-
+        #print(min_age)
         for time in time_indices:
             # Filter DataFrame based on age group and time
             if include_max and include_min:
@@ -274,6 +275,7 @@ def generate_moments(df, config):
 
     # Process derived variables under 'Setup'
     derived_vars_config = config['Setup']['derived_variables'][0]
+    print(derived_vars_config)
 
     if derived_vars_config != 'None':
         for derived_var, expression in derived_vars_config.items():
@@ -299,7 +301,7 @@ def generate_moments(df, config):
     autocorr_vars = config['Identification']['autocorrs']
     age_groups = {key: tuple(value) for key, value in 
                 config['Setup']['age_groups'].items()}
-
+    print(age_groups)
     # Initialize dictionary for storing DataFrames
     stats_by_group = {}
     raw_moments = {}

@@ -13,7 +13,7 @@ Setup:
   # Derived Variables
   # Define new variables calculated from existing data
   derived_variables:
-    - total_wealth = wealth_fin + wealth_real
+    - total_wealth: wealth_fin + wealth_real
 
   # Time Indices
   # Specify time periods used in the analysis
@@ -23,7 +23,7 @@ Setup:
   # Member ID Variable
   # Column name for member identifiers in the data-set
   ID_var:
-    - 'member_id'
+    - 'index'
 
   # Time Variable
   # Column name for time identifiers in the data-set
@@ -33,8 +33,7 @@ Setup:
   # Age Variable
   # Column name for the age variable
   age_var:
-    - 'age'
-
+    - 'Age'
   # Treatment Variable
   # Column name for treatment group variable
   treat_var:
@@ -42,30 +41,30 @@ Setup:
 
   # Gender Variable
   gender_var:
-    - 'gender'
+    - 'Gender'
 
   # Age Groups
   # Define age groups for analysis
   age_groups:
     20-30:
       - include_min: true
-      - min_age: 20
-      - max_age: 30
+      - 20.0
+      - 30.0
       - include_max: false
     30-40:
       - include_min: true
-      - min_age: 30
-      - max_age: 40
+      - 30.0
+      - 40.0
       - include_max: false
     40-50:
       - include_min: true
-      - min_age: 40
-      - max_age: 50
+      - 40.0
+      - 50.0
       - include_max: false
     50-60:
       - include_min: true
-      - min_age: 50
-      - max_age: 60
+      - 50.0
+      - 60.0
       - include_max: false
 
 # Identification Section
