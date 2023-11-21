@@ -98,4 +98,9 @@ Identification:
   autocorrs:
     - wealth_fin
 
+  # Regressions 
+  OLS:
+    - wealth_fin ~ wealth_real mortgagebal by age_groups, time_indices
+    - total_wealth ~ mortgagebal by age_groups, time_indices
+
 # End of Configuration File

@@ -6,9 +6,9 @@ from the simulated data. The tool also generates the weight matrix *once* based 
 
 Say no to crazy ad-hoc simulated weight matrices!
 
-Influence function generation follows [Erickson and Whited (2002) ]([https://www.jstor.org/stable/10.1086/317670](https://www.jstor.org/stable/3533649?seq=5). See also Jay Kahn's useful exposition ['Influence Functions for Fun and Profit'](https://j-kahn.com/files/influencefunctions.pdf). 
+Influence function generation follows [Erickson and Whited (2002)](https://www.jstor.org/stable/3533649?seq=5). See also Jay Kahn's useful exposition ['Influence Functions for Fun and Profit'](https://j-kahn.com/files/influencefunctions.pdf). 
 
-The project is currently under development.
+The project is currently under development. Contributions welcome!
 
 ## Features
 - Handles panel data with multiple variables and time, cohort, and treatment variables.
