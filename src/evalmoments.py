@@ -275,7 +275,7 @@ def generate_moments(df, config):
 
     # Process derived variables under 'Setup'
     derived_vars_config = config['Setup']['derived_variables'][0]
-    print(derived_vars_config)
+    #print(derived_vars_config)
 
     if derived_vars_config != 'None':
         for derived_var, expression in derived_vars_config.items():
