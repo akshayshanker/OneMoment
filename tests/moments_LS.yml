@@ -100,7 +100,7 @@ Identification:
 
   # Regressions 
   OLS:
-    - wealth_fin ~ wealth_real mortgagebal by age_groups, time_indices
-    - total_wealth ~ mortgagebal by age_groups, time_indices
+    - wealth_fin: wealth_real
+    - total_wealth: wealth_fin
 
 # End of Configuration File
