@@ -182,7 +182,7 @@ def compute_stats_by_time_age_autocorr(
     tuple
         A tuple containing three elements:
         - DataFrame with computed statistics.
-        - DataFrame with regression tables.
+        - Latex regression tables.
         - Dictionary with influence functions for each moment.
         - Dictionary with raw moments.
 
@@ -265,6 +265,8 @@ def compute_stats_by_time_age_autocorr(
                             regression_table,
                             pd.DataFrame({'Variable': ['Intercept'] + x_vars, 'Coefficient': [intercept] + list(slopes)})
                         ], ignore_index=True)
+
+                        latex_regression_table = regression_table.to_latex(index=False, escape=False)
  
                         age_group_results[f'reg_{var1}_{var2.replace(", ", "_")}_t_{time}'] = str(coefficients)
                         raw_results[reg_key] = str(coefficients)
@@ -291,7 +293,7 @@ def compute_stats_by_time_age_autocorr(
 
         results_df = pd.concat([results_df, pd.DataFrame(age_group_results, index=[age_group])])
 
-    return results_df, regression_table, Psi, raw_results
+    return results_df, latex_regression_table, Psi, raw_results
 
 def generate_moments(df, config):
     """
@@ -376,8 +378,8 @@ if __name__ == "__main__":
             return yaml.safe_load(file)
     
     # Reading configuration and data files
-    config = read_config('/Users/juanfrancisco/OneMoment/tests/moments_LS.yml')
-    df_in = pd.read_csv('/Users/juanfrancisco/OneMoment/tests/example_LS.csv')
+    config = read_config('/moments_LS.yml')
+    df_in = pd.read_csv('/example_LS.csv')
 
     # Data format assumptions:
     # - Unique member_ID per individual (row_var)
