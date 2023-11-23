@@ -213,6 +213,7 @@ def compute_stats_by_time_age_autocorr(
     results_df = pd.DataFrame()
     Psi = {}
     raw_results = {}
+    reg_results = {}
     
 
     for age_group, (include_min, min_age, max_age, include_max) in age_groups.items():
@@ -246,32 +247,6 @@ def compute_stats_by_time_age_autocorr(
                     raw_results[sd_key] = age_group_df[var].std()
                     Psi[sd_key] = (age_group_df[var] - age_group_df[var].mean())**2
 
-                regression_table = pd.DataFrame(columns=['Variable', 'Coefficient'])
-                for pair in regress_vars:
-                    for var1, var2 in pair.items():
-    
-                        reg_key = f'reg_{var1}_{var2.replace(", ", "_")}_t_{time}_a_{age_group}'
-                        y = age_group_df[var1].values
-                        x_vars = var2.split(', ') 
-                        x_matrix = age_group_df[x_vars].values
-                        X = np.column_stack((np.ones(x_matrix.shape[0]), x_matrix))
-                        
-                        coefficients = np.linalg.inv(X.T @ X) @ X.T @ y
-                        intercept = coefficients[0]
-                        slopes = coefficients[1:]
-
-                        # Update the regression table
-                        regression_table = pd.concat([
-                            regression_table,
-                            pd.DataFrame({'Variable': ['Intercept'] + x_vars, 'Coefficient': [intercept] + list(slopes)})
-                        ], ignore_index=True)
-
-                        latex_regression_table = regression_table.to_latex(index=False, escape=False)
- 
-                        age_group_results[f'reg_{var1}_{var2.replace(", ", "_")}_t_{time}'] = str(coefficients)
-                        raw_results[reg_key] = str(coefficients)
-                        Psi[reg_key] = 0
-
                 for var1, var2 in corr_vars:
                     corr_key = f'corr_{var1}_{var2}_t_{time}_a_{age_group}'
                     age_group_results[f'corr_{var1}_{var2}_t_{time}'] = age_group_df[[var1, var2]].corr().iloc[0, 1]
@@ -290,10 +265,43 @@ def compute_stats_by_time_age_autocorr(
                         age_group_results[f'autocorr_{var}_t_{time}'] = autocorr
                         raw_results[autocorr_key] = autocorr
                         Psi[autocorr_key] = psi
+                
+            results_df = pd.concat([results_df, pd.DataFrame(age_group_results, index=[age_group])])
 
-        results_df = pd.concat([results_df, pd.DataFrame(age_group_results, index=[age_group])])
+        for time in time_indices:
+            group_df = df[(df[time_var] == time)]
+            #group_df = group_df.dropna(how='any')
+            
+            regression_table = pd.DataFrame(columns=['Variable', 'Coefficient'])
+            for pair in regress_vars:
+                for var1, var2 in pair.items():
+                    x_vars = var2.split(', ') 
+                    all_vars = x_vars + [var1]
+                    print(all_vars)
+                    reg_key = f'reg_{var1}_{var2.replace(", ", "_")}_t_{time}'
+                    group_df_clean = group_df[all_vars].dropna(how='any')
+                    #print(group_df_clean)
+                    y = group_df_clean[var1].values
+                    x_matrix = group_df_clean[x_vars].values
+                    X = np.column_stack((np.ones(x_matrix.shape[0]), x_matrix))
+                    coefficients = np.linalg.inv(X.T @ X) @ X.T @ y
+                    intercept = coefficients[0]
+                    slopes = coefficients[1:]
 
-    return results_df, latex_regression_table, Psi, raw_results
+                    # Update the regression table
+                    regression_table = pd.concat([
+                        regression_table,
+                        pd.DataFrame({'Variable': ['Intercept'] + x_vars, 'Coefficient': [intercept] + list(slopes)})
+                    ], ignore_index=True)
+
+                    latex_regression_table = regression_table.to_latex(index=False, escape=False)
+
+                    age_group_results[f'reg_{var1}_{var2.replace(", ", "_")}_t_{time}'] = str(coefficients)
+                    reg_results[reg_key] = str(coefficients)
+                    #Psi[reg_key] = 0
+
+
+    return results_df, latex_regression_table, Psi, raw_results, reg_results
 
 def generate_moments(df, config):
     """
@@ -333,6 +341,7 @@ def generate_moments(df, config):
     stats_by_group = {}
     raw_moments = {}
     psi_by_group = {}
+    reg_results_by_group = {}
 
     # Iterate over combinations of gender and treatment groups
     for gender in df[gender_var].unique():
@@ -343,18 +352,25 @@ def generate_moments(df, config):
                 
                 df_filtered = df[(df[gender_var] == gender) & 
                                 (df[treatment_var] == treatment)]
-                stats_df, regression_table, psi_df = compute_stats_by_time_age_autocorr(
+                stats_df, regression_table, psi_df, age_group_results, reg_results = compute_stats_by_time_age_autocorr(
                     df_filtered, age_var, time_indices, age_groups, mean_vars, sd_vars,
                     corr_vars, autocorr_vars, regress_vars, time_var=time_var, 
                     member_id_var=member_id_var
                 )
                 stats_by_group[(gender, treatment)] = stats_df
                 psi_by_group = psi_df
+                
+                stats_by_group[(gender, 'treatment')] = stats_df
+                psi_by_group[(gender, 'treatment')] = psi_df
+                raw_moments[(gender, 'treatment')] = age_group_results
+                reg_results_by_group[(gender, 'treatment')] = reg_results
+
+
         else:
             # Process without filtering by treatment if treatment_var is not specified
             df_filtered = df[df[gender_var] == gender]
             
-            stats_df, regression_table, psi_df, age_group_results = compute_stats_by_time_age_autocorr(
+            stats_df, regression_table, psi_df, age_group_results, reg_results = compute_stats_by_time_age_autocorr(
                 df_filtered, age_var, time_indices, age_groups, mean_vars, sd_vars, 
                 corr_vars, autocorr_vars, regress_vars, time_var=time_var, 
                 member_id_var=member_id_var
@@ -362,8 +378,9 @@ def generate_moments(df, config):
             stats_by_group[(gender, 'None')] = stats_df
             psi_by_group[(gender, 'None')] = psi_df
             raw_moments[(gender, 'None')] = age_group_results
+            reg_results_by_group = reg_results
 
-    return stats_by_group, regression_table, psi_by_group, raw_moments
+    return stats_by_group, regression_table, psi_by_group, raw_moments, reg_results_by_group
 
 
 if __name__ == "__main__":
