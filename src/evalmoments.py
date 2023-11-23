@@ -277,10 +277,8 @@ def compute_stats_by_time_age_autocorr(
                 for var1, var2 in pair.items():
                     x_vars = var2.split(', ') 
                     all_vars = x_vars + [var1]
-                    print(all_vars)
                     reg_key = f'reg_{var1}_{var2.replace(", ", "_")}_t_{time}'
                     group_df_clean = group_df[all_vars].dropna(how='any')
-                    #print(group_df_clean)
                     y = group_df_clean[var1].values
                     x_matrix = group_df_clean[x_vars].values
                     X = np.column_stack((np.ones(x_matrix.shape[0]), x_matrix))
@@ -395,8 +393,8 @@ if __name__ == "__main__":
             return yaml.safe_load(file)
     
     # Reading configuration and data files
-    config = read_config('/moments_LS.yml')
-    df_in = pd.read_csv('/example_LS.csv')
+    config = read_config('/Users/juanfrancisco/OneMoment/tests/moments_LS.yml')
+    df_in = pd.read_csv('/Users/juanfrancisco/OneMoment/tests/example_LS.csv')
 
     # Data format assumptions:
     # - Unique member_ID per individual (row_var)
@@ -406,7 +404,8 @@ if __name__ == "__main__":
     # Output dictionaries for raw moments and influence functions
     # are indexed by gender x treatment group pairs
     # Example: raw_moments[('Female', 'None')] for Female, no treatment group
-    df, reg, psi_df, raw_moments = generate_moments(df_in, config)
+    df, reg, psi_df, raw_moments, reg_by_group = generate_moments(df_in, config)
+    
 
     # Compute the variance-covariance matrix for the moments
     #V = _compute_cov_matrix_with_nan(raw_moments[('Female', 'None')],
