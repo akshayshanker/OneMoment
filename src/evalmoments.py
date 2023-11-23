@@ -295,19 +295,18 @@ def compute_stats_by_time_age_autocorr(
                     slopes = coefficients[1:]
 
                     # Update the regression table
-                    regression_table = pd.concat([
-                        regression_table,
-                        pd.DataFrame({'Variable': ['Intercept'] + x_vars, 'Coefficient': [intercept] + list(slopes), 'Standard Error': standard_errors})
-                    ], ignore_index=True)
+                    regression_table = {
+                                        'Variable': ['Intercept'] + x_vars,
+                                        'Coefficient': [intercept] + list(slopes),
+                                        'Standard Error': standard_errors
+                                    }
 
-                    latex_regression_table = regression_table.to_latex(index=False, escape=False)
 
-                    age_group_results[f'reg_{var1}_{var2.replace(", ", "_")}_t_{time}'] = str(coefficients)
-                    reg_results[reg_key] = str(coefficients)
+                    age_group_results[f'reg_{var1}_{var2.replace(", ", "_")}_t_{time}'] = coefficients
+                    reg_results[str(var1)] = regression_table
                     #Psi[reg_key] = 0
 
-
-    return results_df, latex_regression_table, Psi, raw_results, reg_results
+    return results_df, reg_results, Psi, raw_results
 
 def generate_moments(df, config):
     """
@@ -358,7 +357,7 @@ def generate_moments(df, config):
                 
                 df_filtered = df[(df[gender_var] == gender) & 
                                 (df[treatment_var] == treatment)]
-                stats_df, regression_table, psi_df, age_group_results, reg_results = compute_stats_by_time_age_autocorr(
+                stats_df, regression_table, psi_df, age_group_results = compute_stats_by_time_age_autocorr(
                     df_filtered, age_var, time_indices, age_groups, mean_vars, sd_vars,
                     corr_vars, autocorr_vars, regress_vars, time_var=time_var, 
                     member_id_var=member_id_var
@@ -369,14 +368,14 @@ def generate_moments(df, config):
                 stats_by_group[(gender, 'treatment')] = stats_df
                 psi_by_group[(gender, 'treatment')] = psi_df
                 raw_moments[(gender, 'treatment')] = age_group_results
-                reg_results_by_group[(gender, 'treatment')] = reg_results
+                reg_results_by_group[(gender, 'treatment')] = regression_table
 
 
         else:
             # Process without filtering by treatment if treatment_var is not specified
             df_filtered = df[df[gender_var] == gender]
             
-            stats_df, regression_table, psi_df, age_group_results, reg_results = compute_stats_by_time_age_autocorr(
+            stats_df, regression_table, psi_df, age_group_results = compute_stats_by_time_age_autocorr(
                 df_filtered, age_var, time_indices, age_groups, mean_vars, sd_vars, 
                 corr_vars, autocorr_vars, regress_vars, time_var=time_var, 
                 member_id_var=member_id_var
@@ -384,9 +383,10 @@ def generate_moments(df, config):
             stats_by_group[(gender, 'None')] = stats_df
             psi_by_group[(gender, 'None')] = psi_df
             raw_moments[(gender, 'None')] = age_group_results
-            reg_results_by_group = reg_results
+            reg_results_by_group = regression_table
 
-    return stats_by_group, regression_table, psi_by_group, raw_moments, reg_results_by_group
+
+    return stats_by_group, psi_by_group, raw_moments, reg_results_by_group
 
 
 if __name__ == "__main__":
@@ -412,7 +412,9 @@ if __name__ == "__main__":
     # Output dictionaries for raw moments and influence functions
     # are indexed by gender x treatment group pairs
     # Example: raw_moments[('Female', 'None')] for Female, no treatment group
-    df, reg, psi_df, raw_moments, reg_by_group = generate_moments(df_in, config)
+
+    df, psi_df, raw_moments, reg_by_group = generate_moments(df_in, config)
+
 
 
     # Compute the variance-covariance matrix for the moments
