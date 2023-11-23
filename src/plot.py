@@ -60,7 +60,7 @@ def plot_variables(generated_df, simulated_df, variable_of_interest, variables_t
 
             axes[idx].plot(age_groups, data1[full_variable_name], label=f'Generated data - {full_variable_name}', linestyle='-', marker='s',
                            color='black', linewidth=2)
-            axes[idx].plot(age_groups, data2[full_variable_name], label=f'Simulated data - {full_variable_name}', linestyle='--', marker='s',
+            axes[idx].plot(age_groups, data2[full_variable_name], label=f'Simulated data - {full_variable_name}', linestyle='--', marker='o',
                            color='black', linewidth=2)
 
         axes[idx].set_title(f'{variable_of_interest_single}')
