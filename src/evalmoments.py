@@ -275,6 +275,7 @@ def compute_stats_by_time_age_autocorr(
             regression_table = pd.DataFrame(columns=['Variable', 'Coefficient'])
             for pair in regress_vars:
                 for var1, var2 in pair.items():
+                    #calculate regression coefficients
                     x_vars = var2.split(', ') 
                     all_vars = x_vars + [var1]
                     reg_key = f'reg_{var1}_{var2.replace(", ", "_")}_t_{time}'
@@ -283,13 +284,20 @@ def compute_stats_by_time_age_autocorr(
                     x_matrix = group_df_clean[x_vars].values
                     X = np.column_stack((np.ones(x_matrix.shape[0]), x_matrix))
                     coefficients = np.linalg.inv(X.T @ X) @ X.T @ y
+
+                    #calculate standard errors
+                    residuals = y - X @ coefficients
+                    mse = np.sum(residuals**2) / (X.shape[0] - X.shape[1])
+                    var_cov_matrix = mse * np.linalg.inv(X.T @ X)
+                    standard_errors = np.sqrt(np.diagonal(var_cov_matrix))
+
                     intercept = coefficients[0]
                     slopes = coefficients[1:]
 
                     # Update the regression table
                     regression_table = pd.concat([
                         regression_table,
-                        pd.DataFrame({'Variable': ['Intercept'] + x_vars, 'Coefficient': [intercept] + list(slopes)})
+                        pd.DataFrame({'Variable': ['Intercept'] + x_vars, 'Coefficient': [intercept] + list(slopes), 'Standard Error': standard_errors})
                     ], ignore_index=True)
 
                     latex_regression_table = regression_table.to_latex(index=False, escape=False)
@@ -393,8 +401,8 @@ if __name__ == "__main__":
             return yaml.safe_load(file)
     
     # Reading configuration and data files
-    config = read_config('/Users/juanfrancisco/OneMoment/tests/moments_LS.yml')
-    df_in = pd.read_csv('/Users/juanfrancisco/OneMoment/tests/example_LS.csv')
+    config = read_config('/moments_LS.yml')
+    df_in = pd.read_csv('/example_LS.csv')
 
     # Data format assumptions:
     # - Unique member_ID per individual (row_var)
@@ -405,7 +413,7 @@ if __name__ == "__main__":
     # are indexed by gender x treatment group pairs
     # Example: raw_moments[('Female', 'None')] for Female, no treatment group
     df, reg, psi_df, raw_moments, reg_by_group = generate_moments(df_in, config)
-    
+
 
     # Compute the variance-covariance matrix for the moments
     #V = _compute_cov_matrix_with_nan(raw_moments[('Female', 'None')],
